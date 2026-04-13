@@ -1,0 +1,55 @@
+name: SCALA CI — build & test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:10.6
+        env:
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: lbs
+          TZ: Europe/Warsaw
+        ports: ['5432']
+        options: >-
+          --health-cmd "pg_isready -U ${{ secrets.DB_USER }}" 
+          --health-interval 10s 
+          --health-timeout 5s 
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '11'
+      - name: Create config from secrets
+        run: |
+          cat >secrets.conf <<EOF
+          db {
+            host = "postgres"
+            port = 5432
+            name = "lbs"
+            user = "${{ secrets.DB_USER }}"
+            password = "${{ secrets.DB_PASSWORD }}"
+          }
+          EOF
+      - name: Wait for Postgres
+        run: |
+          for i in {1..30}; do pg_isready -h postgres -p 5432 -U ${{ secrets.DB_USER }} && break; sleep 2; done
+      - name: Build
+        run: sbt -Dconfig.file=secrets.conf compile
+      - name: Test
+        run: sbt -Dconfig.file=secrets.conf test
+      - name: Build Docker image (optional)
+        if: success()
+        run: docker build -t luxmed-bot:ci .
