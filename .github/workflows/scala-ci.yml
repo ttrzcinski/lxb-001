@@ -42,8 +42,8 @@ jobs:
             host = "postgres"
             port = 5432
             name = "lbs"
-            user = "${DB_USER}"
-            password = "${DB_PASSWORD}"
+            user = "${{ secrets.DB_USER }}"
+            password = "${{ secrets.DB_PASSWORD }}"
           }
           EOF
       - name: Wait for Postgres
