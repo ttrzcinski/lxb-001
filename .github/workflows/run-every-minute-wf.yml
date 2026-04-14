@@ -1,36 +1,34 @@
 ---
-name: Run-Every-60-Seconds
+name: Run-Every-60s
 
 on:
   workflow_dispatch: {}
 
 concurrency:
   group: run-every-60s
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  run-script:
+  run:
     runs-on: ubuntu-latest
 
     steps:
       - name: Main task
         run: |
-          NOW=$(date +%s)
-          echo "Current time: $NOW"
-          echo "Hello from 60s scheduler"
+          echo "Run at: $(date -u)"
+          echo "Hello scheduler"
 
-          echo $NOW > last_run.txt
-
-      - name: Trigger next run
+      - name: ALWAYS trigger next run (even if previous step fails)
+        if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
         run: |
           BASE="https://api.github.com/repos/$REPO/actions/workflows"
-          WORKFLOW="run-every-60-seconds.yml/dispatches"
+          WF="run-every-60s.yml/dispatches"
 
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $GH_TOKEN" \
-            "$BASE/$WORKFLOW" \
+            "$BASE/$WF" \
             -d '{"ref":"master"}'
