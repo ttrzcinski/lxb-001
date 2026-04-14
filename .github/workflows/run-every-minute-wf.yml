@@ -5,11 +5,16 @@ on:
     - cron: '*/2 * * * *'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   run-script:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Run Script
-        run: echo "Hell-2-THE-WORLD!"
+      - uses: actions/checkout@v4
+      - name: Print some hell
+        run: |
+          date -u +"UTC: %Y-%m-%d %H:%M:%S"
+          echo "Hell-2-THE-WORLD!"
