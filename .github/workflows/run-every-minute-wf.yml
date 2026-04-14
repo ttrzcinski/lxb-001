@@ -1,23 +1,35 @@
-name: Run-Every-5-Minutes
+---
+name: Run-Every-Minute-WF
 
 on:
-  schedule:
-    - cron: '*/5 * * * *'
-  workflow_dispatch:
-  push:
-    branches:
-      - master
+  workflow_dispatch: {}
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: run-every-minute
   cancel-in-progress: false
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
-      - name: Print some hell
+
+      - name: Main task
         run: |
           date -u +"UTC: %Y-%m-%d %H:%M:%S"
-          echo "Hell-2-THE-WORLD!"
+          echo "Hello from controlled scheduler"
+
+      - name: Trigger next run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          BASE="https://api.github.com/repos/$REPO/actions/workflows"
+          WORKFLOW="run-every-minute-wf.yml/dispatches"
+
+          curl -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            "$BASE/$WORKFLOW" \
+            -d '{"ref":"master"}'
