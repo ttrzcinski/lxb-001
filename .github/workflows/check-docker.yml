@@ -33,13 +33,25 @@ jobs:
           java-version: '11'
           cache: gradle
 
-      - name: Build with Gradle
-        run: ./gradlew :server:clean :server:build
+      - name: Build server module
+        run: ./gradlew :server:clean :server:bootJar
 
       - name: Prepare Docker context
         run: |
           mkdir -p "${{ env.DOCKER_DIR }}"
-          cp server/build/libs/*.jar "${{ env.DOCKER_DIR }}/server.jar"
+
+          echo "==== server/build/libs ===="
+          ls -la server/build/libs || exit 1
+
+          JAR=$(find server/build/libs -name "*.jar" | head -n 1)
+
+          if [ -z "$JAR" ]; then
+            echo "❌ No JAR found in server/build/libs"
+            exit 1
+          fi
+
+          echo "Using JAR: $JAR"
+          cp "$JAR" "${{ env.DOCKER_DIR }}/server.jar"
 
       - name: Check Docker client & daemon
         run: |
