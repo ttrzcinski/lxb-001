@@ -10,7 +10,6 @@ Unofficial Telegram bot for **Portal Pacjenta LUX MED**.
 1. Add Docker build CI pipeline
 2. Add GH secrets and read them from GH Secrets.
 4. Use tmp or remote postgres.
-5. Add cron job.
 
 ### Overview 
 Luxmed Bot can help you book doctor visits, monitor appointments, and view your upcoming appointments and visit history.
