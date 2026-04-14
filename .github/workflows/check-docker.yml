@@ -53,6 +53,9 @@ jobs:
           echo "Using JAR: $JAR"
           cp "$JAR" "${{ env.DOCKER_DIR }}/server.jar"
 
+          cp run.sh "${{ env.DOCKER_DIR }}/run.sh" || true
+          cp version "${{ env.DOCKER_DIR }}/version" || true
+
       - name: Check Docker client & daemon
         run: |
           if command -v docker >/dev/null 2>&1; then
