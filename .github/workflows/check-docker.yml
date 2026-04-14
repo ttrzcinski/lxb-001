@@ -39,7 +39,7 @@ jobs:
       - name: Prepare Docker context
         run: |
           mkdir -p "${{ env.DOCKER_DIR }}"
-          cp build/libs/*.jar "${{ env.DOCKER_DIR }}/server.jar"
+          cp server/build/libs/*.jar "${{ env.DOCKER_DIR }}/server.jar"
 
       - name: Check Docker client & daemon
         run: |
