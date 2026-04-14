@@ -1,0 +1,58 @@
+name: Check Docker on Runner
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+env:
+  DOCKER_DIR: docker
+  DOCKERFILE: Dockerfile
+  IMAGE_NAME: lxb-001:ci
+
+jobs:
+  check-docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Show runner info
+        run: |
+          uname -a
+          lsb_release -a || true
+          echo "GITHUB_WORKSPACE=$GITHUB_WORKSPACE"
+          echo "DOCKER_DIR=${{ env.DOCKER_DIR }}"
+          echo "DOCKERFILE=${{ env.DOCKERFILE }}"
+
+      - name: Check Docker client & daemon
+        run: |
+          if command -v docker >/dev/null 2>&1; then
+            echo "docker found at $(command -v docker)"
+            docker --version || true
+            if docker info >/dev/null 2>&1; then
+              echo "Docker daemon is available"
+            else
+              echo "Docker daemon NOT available (rootless or not running)"
+            fi
+          else
+            echo "docker NOT found on runner"
+            exit 0
+          fi
+
+      - name: List repo root
+        run: ls -la
+
+      - name: Show Dockerfile directory contents
+        run: |
+          cd "${{ env.DOCKER_DIR }}" || { echo "Directory not found: ${{ env.DOCKER_DIR }}"; exit 1; }
+          echo "Now in: $(pwd)"
+          ls -la
+          echo "Dockerfile content:"
+          sed -n '1,200p' "${{ env.DOCKERFILE }}" || true
+
+      - name: Build Docker image (optional)
+        run: |
+          cd "${{ env.DOCKER_DIR }}"
+          docker build -f "${{ env.DOCKERFILE }}" -t "${{ env.IMAGE_NAME }}" .
