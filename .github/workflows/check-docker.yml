@@ -52,7 +52,7 @@ jobs:
           echo "Dockerfile content:"
           sed -n '1,200p' "${{ env.DOCKERFILE }}" || true
           
-      - name: Build Docker image
+      - name: Build Docker image damm
         run: |
           docker build -f "\${{ env.DOCKER\_DIR }}/\${{ env.DOCKERFILE }}" -t "\${{ env.IMAGE\_NAME }}" "\${{ github.workspace }}"
  
