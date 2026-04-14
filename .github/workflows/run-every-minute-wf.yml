@@ -1,8 +1,9 @@
-name: Run-Every-Minute-Workflow
+name: Run-Every-5-Minutes
 
 on:
   schedule:
     - cron: '*/5 * * * *'
+  workflow_dispatch:
 
 jobs:
   run-script:
@@ -11,5 +12,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Run Script
-        run: |
-          echo "Hello World"
+        run: echo "Hello World"
