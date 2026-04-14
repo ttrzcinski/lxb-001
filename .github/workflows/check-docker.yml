@@ -54,7 +54,7 @@ jobs:
           cp "$JAR" "${{ env.DOCKER_DIR }}/server.jar"
 
           cp run.sh "${{ env.DOCKER_DIR }}/run.sh" || true
-          cp version "${{ env.DOCKER_DIR }}/version" || true
+          echo "1.0.0" > "${{ env.DOCKER_DIR }}/version"
 
       - name: Check Docker client & daemon
         run: |
