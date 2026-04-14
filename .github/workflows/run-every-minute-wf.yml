@@ -1,24 +1,25 @@
 ---
-name: Run-Every-Minute-WF
+name: Run-Every-60-Seconds
 
 on:
   workflow_dispatch: {}
 
 concurrency:
-  group: run-every-minute
-  cancel-in-progress: false
+  group: run-every-60s
+  cancel-in-progress: true
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-
       - name: Main task
         run: |
-          date -u +"UTC: %Y-%m-%d %H:%M:%S"
-          echo "Hello from controlled scheduler"
+          NOW=$(date +%s)
+          echo "Current time: $NOW"
+          echo "Hello from 60s scheduler"
+
+          echo $NOW > last_run.txt
 
       - name: Trigger next run
         env:
@@ -26,7 +27,7 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           BASE="https://api.github.com/repos/$REPO/actions/workflows"
-          WORKFLOW="run-every-minute-wf.yml/dispatches"
+          WORKFLOW="run-every-60-seconds.yml/dispatches"
 
           curl -X POST \
             -H "Accept: application/vnd.github+json" \
