@@ -31,30 +31,15 @@ jobs:
         with:
           distribution: temurin
           java-version: '11'
-          cache: sbt
+          cache: gradle
 
-      - name: Cache sbt and Ivy
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.ivy2/cache
-            ~/.sbt
-            ~/.coursier
-            ~/.cache/coursier
-          key: sbt-cache-${{ runner.os }}-${{ hashFiles('**/build.sbt') }}
-
-      - name: Build with sbt (assembly)
-        run: |
-          sbt -v clean assembly
-          working-directory: .
+      - name: Build with Gradle
+        run: ./gradlew clean build
 
       - name: Prepare Docker context
         run: |
           mkdir -p "${{ env.DOCKER_DIR }}"
-          cp target/scala-/yourapp-assembly-.jar \
-            "${{ env.DOCKER_DIR }}/server.jar"
-          cp run.sh "${{ env.DOCKER_DIR }}/run.sh" || true
-          cp version "${{ env.DOCKER_DIR }}/version" || true
+          cp build/libs/*.jar "${{ env.DOCKER_DIR }}/server.jar"
 
       - name: Check Docker client & daemon
         run: |
