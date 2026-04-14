@@ -80,8 +80,9 @@ jobs:
           echo "Dockerfile content:"
           sed -n '1,200p' "${{ env.DOCKERFILE }}" || true
 
-      - name: Build Docker image damm
+      - name: Build Docker image
         run: |
           docker build \
             -f "${{ env.DOCKER_DIR }}/${{ env.DOCKERFILE }}" \
-            -t "${{ env.IMAGE_NAME }}" "${{ github.workspace }}"
+            -t "${{ env.IMAGE_NAME }}" \
+            "${{ env.DOCKER_DIR }}"
