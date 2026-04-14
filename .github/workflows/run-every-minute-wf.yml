@@ -1,8 +1,8 @@
-name: Run-Every-5-Minutes
+name: Run-Every-2-Minutes
 
 on:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/2 * * * *'
   workflow_dispatch:
 
 jobs:
