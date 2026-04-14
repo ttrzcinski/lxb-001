@@ -51,6 +51,8 @@ jobs:
           ls -la
           echo "Dockerfile content:"
           sed -n '1,200p' "${{ env.DOCKERFILE }}" || true
+          
       - name: Build Docker image
         run: |
           docker build -f "\${{ env.DOCKER\_DIR }}/\${{ env.DOCKERFILE }}" -t "\${{ env.IMAGE\_NAME }}" "\${{ github.workspace }}"
+ 
