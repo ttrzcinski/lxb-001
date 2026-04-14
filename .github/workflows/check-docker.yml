@@ -34,7 +34,7 @@ jobs:
           cache: gradle
 
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew :server:clean :server:build
 
       - name: Prepare Docker context
         run: |
